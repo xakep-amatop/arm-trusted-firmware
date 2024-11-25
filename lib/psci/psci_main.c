@@ -439,13 +439,18 @@ u_register_t psci_smc_handler(uint32_t smc_fid,
 {
 	u_register_t ret;
 
+	WARN("Call %s:%d\n", __func__, __LINE__);
+
 	if (is_caller_secure(flags))
 		return (u_register_t)SMC_UNK;
+
+	WARN("Call %s:%d %08x %08x %08x\n", __func__, __LINE__, psci_caps, define_psci_cap(smc_fid), smc_fid);
 
 	/* Check the fid against the capabilities */
 	if ((psci_caps & define_psci_cap(smc_fid)) == 0U)
 		return (u_register_t)SMC_UNK;
 
+	WARN("Call %s:%d\n", __func__, __LINE__);
 	if (((smc_fid >> FUNCID_CC_SHIFT) & FUNCID_CC_MASK) == SMC_32) {
 		/* 32-bit PSCI function, clear top parameter bits */
 
@@ -453,6 +458,7 @@ u_register_t psci_smc_handler(uint32_t smc_fid,
 		uint32_t r2 = (uint32_t)x2;
 		uint32_t r3 = (uint32_t)x3;
 
+		WARN("Call %s:%d %u\n", __func__, __LINE__, smc_fid);
 		switch (smc_fid) {
 		case PSCI_VERSION:
 			ret = (u_register_t)psci_version();
@@ -573,6 +579,7 @@ u_register_t psci_smc_handler(uint32_t smc_fid,
 			break;
 
 		case PSCI_SYSTEM_SUSPEND_AARCH64:
+			WARN("PSCI CALL suspend: 0x%lx 0x%lx\n", x1, x2);
 			ret = (u_register_t)psci_system_suspend(x1, x2);
 			break;
 

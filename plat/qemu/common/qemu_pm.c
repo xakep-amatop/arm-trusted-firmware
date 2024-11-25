@@ -157,6 +157,10 @@ qemu_pwr_domain_pwr_down_wfi(const psci_power_state_t *target_state)
  ******************************************************************************/
 void qemu_pwr_domain_suspend(const psci_power_state_t *target_state)
 {
+	WARN("Call %s:%d\n", __func__, __LINE__);
+	dsb();
+	wfi();
+	return;
 	assert(0);
 }
 
@@ -180,6 +184,9 @@ void qemu_pwr_domain_on_finish(const psci_power_state_t *target_state)
  ******************************************************************************/
 void qemu_pwr_domain_suspend_finish(const psci_power_state_t *target_state)
 {
+	WARN("Call %s:%d\n", __func__, __LINE__);
+	sev();
+	return;
 	assert(0);
 }
 
@@ -214,6 +221,18 @@ static void __dead2 qemu_system_reset(void)
 	panic();
 }
 
+void qemu_get_sys_suspend_power_state(psci_power_state_t *req_state)
+{
+	unsigned int i;
+
+	for (i = MPIDR_AFFLVL0; i <= PLAT_MAX_PWR_LVL; i++)
+		req_state->pwr_domain_state[i] = 2U;
+
+#if PSCI_OS_INIT_MODE
+	req_state->last_at_pwrlvl = PLAT_MAX_PWR_LVL;
+#endif
+}
+
 static const plat_psci_ops_t plat_qemu_psci_pm_ops = {
 	.cpu_standby = qemu_cpu_standby,
 	.pwr_domain_on = qemu_pwr_domain_on,
@@ -225,6 +244,7 @@ static const plat_psci_ops_t plat_qemu_psci_pm_ops = {
 	.system_off = qemu_system_off,
 	.system_reset = qemu_system_reset,
 	.validate_power_state = qemu_validate_power_state,
+	.get_sys_suspend_power_state = qemu_get_sys_suspend_power_state,
 };
 
 int plat_setup_psci_ops(uintptr_t sec_entrypoint,

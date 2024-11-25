@@ -217,4 +217,7 @@ void psci_cpu_on_finish(unsigned int cpu_idx, const psci_power_state_t *state_in
 	/* Populate the mpidr field within the cpu node array */
 	/* This needs to be done only once */
 	psci_cpu_pd_nodes[cpu_idx].mpidr = read_mpidr() & MPIDR_AFFINITY_MASK;
+
+
+	WARN("Call %s:%d\n", __func__, __LINE__);
 }

@@ -102,6 +102,8 @@ static uintptr_t std_svc_smc_handler(uint32_t smc_fid,
 			     void *handle,
 			     u_register_t flags)
 {
+
+	WARN("Call %s:%d\n", __func__, __LINE__);
 	if (((smc_fid >> FUNCID_CC_SHIFT) & FUNCID_CC_MASK) == SMC_32) {
 		/* 32-bit SMC function, clear top parameter bits */
 
@@ -111,6 +113,7 @@ static uintptr_t std_svc_smc_handler(uint32_t smc_fid,
 		x4 &= UINT32_MAX;
 	}
 
+	WARN("Call %s:%d\n", __func__, __LINE__);
 	/*
 	 * Dispatch PSCI calls to PSCI SMC handler and return its return
 	 * value
@@ -129,7 +132,7 @@ static uintptr_t std_svc_smc_handler(uint32_t smc_fid,
 		    PMF_CACHE_MAINT,
 		    get_cpu_data(cpu_data_pmf_ts[CPU_DATA_PMF_TS0_IDX]));
 #endif
-
+		WARN("Call %s:%d\n", __func__, __LINE__);
 		ret = psci_smc_handler(smc_fid, x1, x2, x3, x4,
 		    cookie, handle, flags);
 
