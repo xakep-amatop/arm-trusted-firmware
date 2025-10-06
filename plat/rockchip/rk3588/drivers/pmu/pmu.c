@@ -1287,6 +1287,7 @@ static void pm_pll_restore(void)
 
 int rockchip_soc_sys_pwr_dm_suspend(void)
 {
+	INFO("%s: rockchip_soc_sys_pwr_dm_suspend\n", __FILE__);
 	clk_gate_con_save();
 	clk_gate_con_disable();
 

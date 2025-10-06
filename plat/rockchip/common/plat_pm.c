@@ -244,6 +244,8 @@ void rockchip_pwr_domain_suspend(const psci_power_state_t *target_state)
 	plat_local_state_t lvl_state;
 	int ret;
 
+	INFO("Suspending power domain: %d %d %d\n", RK_SYSTEM_PWR_STATE(target_state), RK_CLUSTER_PWR_STATE(target_state), RK_CORE_PWR_STATE(target_state));
+
 	if (RK_CORE_PWR_STATE(target_state) != PLAT_MAX_OFF_STATE)
 		return;
 
@@ -262,11 +264,15 @@ void rockchip_pwr_domain_suspend(const psci_power_state_t *target_state)
 	if (RK_SYSTEM_PWR_STATE(target_state) == PLAT_MAX_OFF_STATE)
 		return;
 
+	INFO("0002 Suspending power domain: %d\n", RK_CORE_PWR_STATE(target_state));
+
 	for (lvl = MPIDR_AFFLVL1; lvl <= PLAT_MAX_PWR_LVL; lvl++) {
 		lvl_state = target_state->pwr_domain_state[lvl];
 		ret = rockchip_soc_hlvl_pwr_dm_suspend(lvl, lvl_state);
-		if (ret == PSCI_E_NOT_SUPPORTED)
+		if (ret == PSCI_E_NOT_SUPPORTED) {
+			INFO("rockchip_soc_hlvl_pwr_dm_suspend not supported for level: %d\n", lvl);
 			break;
+		}
 	}
 }
 
@@ -280,6 +286,8 @@ void rockchip_pwr_domain_on_finish(const psci_power_state_t *target_state)
 	uint32_t lvl;
 	plat_local_state_t lvl_state;
 	int ret;
+
+	INFO("START rockchip_pwr_domain_on_finish power domain: %d\n", RK_CORE_PWR_STATE(target_state));
 
 	assert(RK_CORE_PWR_STATE(target_state) == PLAT_MAX_OFF_STATE);
 
@@ -303,6 +311,8 @@ void rockchip_pwr_domain_on_finish(const psci_power_state_t *target_state)
 
 	/* Program the gic per-cpu distributor or re-distributor interface */
 	plat_rockchip_gic_cpuif_enable();
+
+	INFO("END rockchip_pwr_domain_on_finish power domain: %d\n", RK_CORE_PWR_STATE(target_state));
 }
 
 /*******************************************************************************

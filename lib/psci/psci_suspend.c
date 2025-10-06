@@ -137,12 +137,15 @@ int psci_cpu_suspend_start(unsigned int idx,
 	 */
 	psci_acquire_pwr_domain_locks(end_pwrlvl, parent_nodes);
 
+	INFO("%s:%d read_isr_el1() = %lx\n", __func__, __LINE__, read_isr_el1());
+
 	/*
 	 * We check if there are any pending interrupts after the delay
 	 * introduced by lock contention to increase the chances of early
 	 * detection that a wake-up interrupt has fired.
 	 */
-	if (read_isr_el1() != 0U) {
+	if (0 && read_isr_el1() != 0U) {
+		INFO("%s:%d\n", __func__, __LINE__);
 		goto suspend_exit;
 	}
 
